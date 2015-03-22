@@ -195,9 +195,12 @@ public class WebcamViewerExtensionCompat extends StaticWidget implements Runnabl
                         
                         int pos = 2;
                         boolean has_dht = false;
+                        boolean has_error = false;
                         while (!has_dht) {
-                            assert pos+4 <= size;
-                            assert (data[pos] & 0xff) == 0xff;
+                            if ((pos+4 > size) || (data[pos] & 0xff) != 0xff) {
+                              has_error = true;
+                              break;
+                            }
     
                             if ((data[pos+1] & 0xff) == 0xc4)
                                 has_dht = true;
@@ -208,7 +211,7 @@ public class WebcamViewerExtensionCompat extends StaticWidget implements Runnabl
                             int marker_size = ((data[pos+2] & 0xff) << 8) + (data[pos+3] & 0xff);
                             pos += marker_size+2;
                         }
-                        if (!has_dht) {
+                        if (!has_dht && !has_error) {
                             System.arraycopy(data, pos, data, pos+huffman_table.length, size-pos);
                             System.arraycopy(huffman_table, 0, data, pos, huffman_table.length);
                             size += huffman_table.length;
@@ -227,6 +230,8 @@ public class WebcamViewerExtensionCompat extends StaticWidget implements Runnabl
                     } catch (Exception e) {
                         try (PrintStream stream = new PrintStream(new File(basePath, "error.txt"))) {
                             e.printStackTrace(stream);
+                            stream.println();
+                            stream.println("Data size: " + size)
                         } catch (IOException e1) {
                         }
                         try (FileOutputStream stream = new FileOutputStream(new File(basePath, "frame.jpg"))) {
