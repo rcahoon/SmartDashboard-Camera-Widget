@@ -231,7 +231,7 @@ public class WebcamViewerExtensionCompat extends StaticWidget implements Runnabl
                         try (PrintStream stream = new PrintStream(new File(basePath, "error.txt"))) {
                             e.printStackTrace(stream);
                             stream.println();
-                            stream.println("Data size: " + size)
+                            stream.println("Data size: " + size);
                         } catch (IOException e1) {
                         }
                         try (FileOutputStream stream = new FileOutputStream(new File(basePath, "frame.jpg"))) {
