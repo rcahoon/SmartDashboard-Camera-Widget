@@ -34,7 +34,7 @@ public class WebcamViewerExtensionCompat extends StaticWidget implements Runnabl
     public static final String NAME = "USB Webcam Viewer (Compat)";
 
     public final IntegerProperty fpsProperty = new IntegerProperty(this, "FPS", 30);
-    public final MultiProperty sizeProperty = new MultiProperty(this, "Size");
+    public final MultiProperty sizeProperty;
 
     private final static int PORT = 1180;
     private final static byte[] MAGIC_NUMBERS = { 0x01, 0x00, 0x00, 0x00 };
@@ -50,16 +50,20 @@ public class WebcamViewerExtensionCompat extends StaticWidget implements Runnabl
     private Socket socket;
     private Thread thread;
 
-
-    /** {@inheritDoc} */
-    @Override
-    public void init() {
-        setPreferredSize(new Dimension(320, 240));
+    public WebcamViewerExtensionCompat() {
+        super();
+        sizeProperty = new MultiProperty(this, "Size");
         
         sizeProperty.add("640x480", SIZE_640x480);
         sizeProperty.add("320x240", SIZE_320x240);
         sizeProperty.add("160x120", SIZE_160x120);
         sizeProperty.setDefault("640x480");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void init() {
+        setPreferredSize(new Dimension(320, 240));
 
         this.thread = new Thread(this);
         this.thread.start();
